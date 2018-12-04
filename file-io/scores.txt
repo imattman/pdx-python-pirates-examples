@@ -1,19 +1,17 @@
-
 Lindsey		81
 Patrick		84
 William		95
 Emily		86
-    James		96
+James		96
 Paula		79
 Stephen		93
 David		92
 Jessica		92
 Jack		62
-
 Steven		81
- Amanda		82
-   Miguel		99
-   Bryan		88
+Amanda		82
+Miguel		99
+Bryan		88
 Charles		85
 Andrea		100
 Jesse		84
