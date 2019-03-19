@@ -2,16 +2,17 @@
 
 import re
 import time
+from tqdm import tqdm
 
 LEXICON = 'sowpods.txt'
 LITERATURE = 'shakespeare.txt'
 UNFAMILIAR = 'new-words.txt'
 
 
-def time_execution(fn):
+def time_execution(func):
     def timed(*args, **kwargs):
         start = time.time()
-        result = fn(*args, **kwargs)
+        result = func(*args, **kwargs)
         end = time.time()
         print(">>> Time to execute: {}\n".format(end - start))
         return result
@@ -24,46 +25,52 @@ def read_words(filename, label='file'):
     with open(filename) as fin:
         words = []
         for line in fin:
-            line = re.sub(r'[,;:?!()\[\]#*$&"\'_.-]', '', line)
+            # do some basic clean up of punctuation and other non-alphas
+            line = re.sub(r'[,;:?!()\[\]\|#*$&"’\'_.-]', '', line)
             for word in line.split():
                 word = word.lower().strip()
                 if not word or re.search(r'^\d+', word):
                     continue
                 words.append(word)
     print()
+    print("word count: {}".format(len(words)))
     return words
 
 
 @time_execution
-def find_new_words(source, lexicon, label='source', progress=False):
-    print("processing {} against lexicon... ".format(label), end='', flush=True)
-    new_words = set()
+def find_new_words(source, lexicon, label='source', progress_dots=False):
+    print("processing {} against lexicon... ".format(label), flush=True)
 
-    for word in source:
+    new_words = set()
+    for word in tqdm(source):
         if (word not in new_words) and (word not in lexicon):
             new_words.add(word)
-            if progress and len(new_words) % 20 == 0:
+            if progress_dots and len(new_words) % 20 == 0:
                 print('.', end='', flush=True)
 
-    print()
+    if progress_dots:
+        print()
+
     return new_words
 
 
-@time_execution
 def main():
-    lexicon = read_words(LEXICON, label="lexicon")
-    lexicon = set(lexicon)
     literature = read_words(LITERATURE, label=LITERATURE)
 
-    unfamiliar = find_new_words(literature, lexicon, 'words', True)
+    lexicon = read_words(LEXICON, label="lexicon")
+    # uncomment below to see a big difference in execution speed
+    # lexicon = set(lexicon)
+
+    unfamiliar = find_new_words(literature, lexicon, LITERATURE, False)
     unfamiliar = sorted(list(unfamiliar))
 
-    print("Unfamiliar words: {}".format(len(unfamiliar)))
+    print("Unfamiliar words not found in lexicon: {}".format(len(unfamiliar)))
     # print("Examples:\n  " + '\n  '.join(unfamiliar[:20]))
 
     with open(UNFAMILIAR, 'w') as fout:
         for w in unfamiliar:
             print(w, file=fout)
+    print("List written to '{}'".format(UNFAMILIAR))
 
 
 if __name__ == "__main__":
