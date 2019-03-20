@@ -59,7 +59,7 @@ def main():
 
     lexicon = read_words(LEXICON, label="lexicon")
     # uncomment below to see a big difference in execution speed
-    lexicon = set(lexicon)
+    # lexicon = set(lexicon)
 
     unfamiliar = find_new_words(literature, lexicon, TEST_FILE, False)
     unfamiliar = sorted(list(unfamiliar))
