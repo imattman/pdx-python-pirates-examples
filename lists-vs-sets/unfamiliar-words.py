@@ -5,8 +5,8 @@ import time
 from tqdm import tqdm
 
 LEXICON = 'sowpods.txt'
-LITERATURE = 'shakespeare.txt'
-UNFAMILIAR = 'new-words.txt'
+TEST_FILE = 'shakespeare.txt'
+NEW_WORDS_FILE = 'new-words.txt'
 
 
 def time_execution(func):
@@ -26,7 +26,7 @@ def read_words(filename, label='file'):
         words = []
         for line in fin:
             # do some basic clean up of punctuation and other non-alphas
-            line = re.sub(r'[,;:?!()\[\]\|#*$&"’\'_.-]', '', line)
+            line = re.sub(r'[,;:?!()\[\]\|/#*$&"’\'_.-]', ' ', line)
             for word in line.split():
                 word = word.lower().strip()
                 if not word or re.search(r'^\d+', word):
@@ -55,22 +55,22 @@ def find_new_words(source, lexicon, label='source', progress_dots=False):
 
 
 def main():
-    literature = read_words(LITERATURE, label=LITERATURE)
+    literature = read_words(TEST_FILE, label=TEST_FILE)
 
     lexicon = read_words(LEXICON, label="lexicon")
     # uncomment below to see a big difference in execution speed
-    # lexicon = set(lexicon)
+    lexicon = set(lexicon)
 
-    unfamiliar = find_new_words(literature, lexicon, LITERATURE, False)
+    unfamiliar = find_new_words(literature, lexicon, TEST_FILE, False)
     unfamiliar = sorted(list(unfamiliar))
 
     print("Unfamiliar words not found in lexicon: {}".format(len(unfamiliar)))
     # print("Examples:\n  " + '\n  '.join(unfamiliar[:20]))
 
-    with open(UNFAMILIAR, 'w') as fout:
+    with open(NEW_WORDS_FILE, 'w') as fout:
         for w in unfamiliar:
             print(w, file=fout)
-    print("List written to '{}'".format(UNFAMILIAR))
+    print("List written to '{}'".format(NEW_WORDS_FILE))
 
 
 if __name__ == "__main__":
